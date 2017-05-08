@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Serial Port over Ethernet</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <pre id="output"></pre>
+  
+  <script type="text/javascript">
+    console.log = console.error = function(message) {
+      document.getElementById("output").innerHTML += message + "<br />";
+    };
+  
+    //Initialize a WebSocket connection
+    var ws = new WebSocket('ws://localhost:5147/api/v1/port/COM13/data');
+    ws.binaryType = 'arraybuffer';
+    ws.onopen = function(event) {
+      console.log("WebSocket connected");
+      console.log(JSON.stringify(event, " ", 2));
+      
+      //Send something to serial port
+      setTimeout(function() {
+        console.log("Sending AT command...");
+        ws.send("AT;\n");
+        console.log("AT command sent.");
+      }, 3000);
+    };
+    ws.onclose = function(event) {
+      console.log("WebSocket disconnected");
+      console.log(JSON.stringify(event, " ", 2));
+    };
+    ws.onmessage = function(event) {
+      console.log("WebSocket read");
+      //console.log(new Uint8Array(event.data));
+      console.log(JSON.stringify(event, " ", 2));
+    };
+    ws.onerror = function(event) {
+      console.error("WebSocket error");
+      console.error(JSON.stringify(event, " ", 2));
+    };
+  </script>
+</body>
+</html>

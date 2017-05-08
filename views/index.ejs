@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Serial Port over Ethernet</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/slate/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro" /> 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="/lib/RemoteSerialPort.js"></script>
+  <style type="text/css">
+  .container-full {
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  .rsp-tabs-container {
+    margin: 20px;
+  }
+  
+  .rsp-port-open {
+    font-weight: bold;
+  }
+  
+  .rsp-port-closed {
+  }
+  
+  .rsp-port-output {
+    margin-top: 20px;
+    min-height: 750px;
+  }
+  
+  .rsp-log-time {
+    color: #999;
+  }
+  
+  .rsp-log-default {
+  }
+  
+  .rsp-log-warning {
+  }
+  
+  .rsp-log-error {
+    color: red;
+  }
+  
+  .hexview {
+    font-size: 12px;
+    font-family: 'Source Code Pro', Consolas, monospace;
+  }
+  
+  pre .hexview div {
+    display: inline;
+  }
+  
+  .hexview-header {
+    color: lightblue;
+  }
+  
+  .hexview-address {
+    color: lightblue;
+  }
+  
+  .hexview-char {
+    color: #999;
+  }
+  
+  .hexview-char-dot {
+    color: #d99;
+  }
+  
+  .hover {
+    color: green !important;
+    background: lime;
+  }
+  
+  [data-hex] {
+    cursor: default;
+  }
+  
+  .dropdown-group .dropdown {
+    float: left;
+    margin-right: 3px;
+  }
+  
+  .dropdown-group {
+  }
+  
+  .dropdown .caret {
+    margin-left: 5px;
+  }
+  
+  .dropdown li a.active {
+    color: lime;
+  }
+  
+  pre, input.form-control {
+    color: #eee;
+    border: 1px solid #272B30;
+    background: #151515;
+  }
+  
+  .rsp-input-write {
+    font-family: 'Source Code Pro', Consolas, monospace;
+  }
+  </style>
+</head>
+<body>
+<div class="container-full">
+
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">Serial Port over Ethernet</a>
+      </div>
+      <ul class="nav navbar-nav rsp-port-tabs">
+        <li class="active"><a href="#console" accesskey="0">Console</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="rsp-templates" style="margin: 20px; display: none;">
+    <div class="rsp-port-template">
+      <div class="rsp-port-container">
+        <div class="rsp-port-options">
+        
+          <div class="row">
+            <div class="col-sm-4">
+              
+              <div class="dropdown-group">
+                <div class="dropdown" data-options="baudRate">
+                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Baud rate<span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" data-value="300">300</a></li>
+                    <li><a href="#" data-value="1200">1200</a></li>
+                    <li><a href="#" data-value="2400">2400</a></li>
+                    <li><a href="#" data-value="4800">4800</a></li>
+                    <li><a href="#" data-value="9600">9600</a></li>
+                    <li><a href="#" data-value="19200">19200</a></li>
+                    <li><a href="#" data-value="38400">38400</a></li>
+                    <li><a href="#" data-value="57600">57600</a></li>
+                    <li><a href="#" data-value="115200">115200</a></li>
+                    <li><a href="#" data-value="250000">250000</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#" class="custom-baud-rate">Custom</a></li>
+                  </ul>
+                </div>
+                <div class="dropdown" data-options="dataBits">
+                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Data bits<span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" data-value="5">5</a></li>
+                    <li><a href="#" data-value="6">6</a></li>
+                    <li><a href="#" data-value="7">7</a></li>
+                    <li><a href="#" data-value="8">8</a></li>
+                  </ul>
+                </div>
+                <div class="dropdown" data-options="stopBits">
+                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Stop bits<span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" data-value="1">1</a></li>
+                    <li><a href="#" data-value="2">2</a></li>
+                  </ul>
+                </div>
+                <div class="dropdown" data-options="parity">
+                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Parity<span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" data-value="none">none</a></li>
+                    <li><a href="#" data-value="even">even</a></li>
+                    <li><a href="#" data-value="mark">mark</a></li>
+                    <li><a href="#" data-value="odd">odd</a></li>
+                    <li><a href="#" data-value="space">space</a></li>
+                  </ul>
+                </div>
+                <button type="button" class="btn btn-info rsp-ws-connected" style="display: none;" disabled>Connected</button>
+                <button type="button" class="btn btn-danger rsp-ws-disconnected" style="display: none;" disabled>Disconnected</button>
+              </div>
+              
+              <button type="button" class="btn btn-primary rsp-action-open">Open</button>
+              <button type="button" class="btn btn-success rsp-action-close" style="display: none;" disabled>Close</button>
+              <div style="clear: both;"></div>
+          
+            </div>
+              
+            <div class="col-sm-4">
+              <div class="form-group">
+                <input type="text" class="form-control rsp-input-write" placeholder="Enter text to send..." accesskey="q" style="display: block; float: left; width: auto; min-width: 378px;" />
+                <button type="button" class="btn btn-primary rsp-action-write" accesskey="s" style="clear: both;" disabled>Send</button>
+              </div>
+            </div>
+            
+            <div class="col-sm-4">
+          
+              <div class="pull-right">
+                <button type="button" class="btn btn-default rsp-action-clear">Clear</button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-info rsp-action-ascii">ASCII</button>
+                  <button type="button" class="btn btn-default rsp-action-hex">HEX</button>
+                </div>
+              </div>
+          
+            </div>
+          </div>
+          
+        </div>
+        <pre class="rsp-port-output"></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="rsp-tabs-container">
+    <div class="rsp-console">
+      <pre class="rsp-port-output rsp-console-log"></pre>
+    </div>
+    <!-- To be populated -->
+  </div>
+  
+</div>
+<script type="text/javascript">
+  function logtime() {
+    return new Date().toTimeString().split(' ')[0];
+  }
+
+  console.log = function (message) {
+    if (typeof message === 'object') message = JSON.stringify(message);
+    $(".rsp-console-log").append('<span class="rsp-log-time">[' + logtime() + ']</span> <span class="rsp-log-default">' + message + '</span>\n');
+  };
+  
+  console.warn = function (message) {
+    if (typeof message === 'object') message = JSON.stringify(message);
+    $(".rsp-console-log").append('<span class="rsp-log-time">[' + logtime() + ']</span> <span class="rsp-log-warn">' + message + '</span>\n');
+  };
+  
+  console.error = function (message) {
+    if (typeof message === 'object') message = JSON.stringify(message);
+    $(".rsp-console-log").append('<span class="rsp-log-time">[' + logtime() + ']</span> <span class="rsp-log-error">' + message + '</span>\n');
+  };
+  
+  function hexview(data) {
+    var hex = "         00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F                 ";
+    var preview = "";
+    var address = 0x00000000;
+    for (var i = 0; i < data.length; i++) {
+      if (i % 16 == 0) {
+        hex += preview + "\n" + ("00000000" + address.toString(16)).substr(-8).toUpperCase() + " ";
+        address += 16;
+        preview = "";
+      }
+      hex += ("00" + data[i].toString(16)).substr(-2).toUpperCase() + " ";
+      
+      if (data[i] >= 32 && data[i] <= 126) {
+        preview += String.fromCharCode(data[i]);
+      }
+      else {
+        preview += ".";
+      }
+    }
+    
+    var blank = 16 - data.length % 16;
+    for (var i = 0; i < blank && blank != 16; i++) {
+      hex += "   ";
+      preview += " ";
+    }
+    hex += preview;
+    
+    return hex;
+  }
+  
+  function hexviewhtml(data) {
+    var hex =
+      '<div class="hexview-header">' +
+      '<span class="hexview-address">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>' + ' ' +
+      '<span class="hexview-offset">00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</span>' + ' ' +
+      '<span class="hexview-preview">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+
+    function format32(address) {
+      return ("00000000" + address.toString(16)).substr(-8).toUpperCase();
+    }
+    
+    function format8(address) {
+      return ("00" + address.toString(16)).substr(-2).toUpperCase();
+    }
+    
+    function addByteHex(data, address) {
+      var c = (data == -1 ? "&nbsp;&nbsp;" : format8(data));
+      return '<span class="hexview-byte" data-address="0x' + format32(address) + '" data-hex="0x' + format8(data) + '">' + c + '</span>';
+    }
+    
+    function addByteChar(data, address) {
+      var type = (data == -1 ? 'blank' : isPrintable(data) ? 'ascii' : 'dot');
+      var s = '<span class="hexview-char hexview-char-' + type + '" data-address="0x' + format32(address) + '" data-hex="0x' + format8(data) + '">';
+      switch (type) {
+        case "ascii":
+          var c = String.fromCharCode(data);
+          if (c == " ") {
+            c = "&nbsp;"
+          }
+          s += c;
+          break;
+          
+        case "blank":
+          s += "&nbsp;";
+          break;
+          
+        default:
+        case "dot":
+          s += ".";
+          break;
+      }
+      s += '</span>';
+      return s;
+    }
+    
+    function isPrintable(ascii) {
+      return ascii >= 32 && ascii <= 126;
+    }
+      
+    var preview = "";
+    var address = 0x00000000;
+    for (var i = 0; i < data.length; i++) {
+      if (i % 16 == 0) {
+        hex += preview + '</div>\n' +
+          '<div class="hexview-row">' +
+          '<span class="hexview-address">' + format32(address) + '</span>' + '&nbsp;';
+        address += 16;
+        preview = "";
+      }
+      
+      hex += addByteHex(data[i], i) + '&nbsp;';
+      preview += addByteChar(data[i], i);
+      
+    }
+    
+    var blank = 16 - data.length % 16;
+    for (var i = 0; i < blank && blank != 16; i++) {
+      hex += addByteHex(-1, i) + '&nbsp;';
+      preview += addByteChar(-1, i);
+    }
+    hex += preview;
+    
+    return '<div class="hexview">' + hex + '</div>';
+  }
+  
+  var chars = [ ];
+  for (var i = 0; i < 256; i++) {
+    chars.push(i);
+    //hexview(chars);
+  }
+  
+  //Array to chunks
+  function toChunks(array, size) {
+    var chunks = [ ];
+    for (var i = 0; i < array.length; i += size) {
+        chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
+  }
+  
+  function toArray(data) {
+    var array = [ ];
+    for (var i = 0; i < data.byteLength; i++) {
+      array.push(data[i]);
+    }
+    return array;
+  }
+  
+  /*
+  setInterval(function() {
+    rsp.available(port, function(error, result) {
+      if (error) return console.error(error);
+      if (result.length > 0) {
+        rsp.read(port, function(error, result) {
+          if (error) return console.error(error);
+          container.find(".rsp-port-output").append(result || "");
+        });
+      }
+    });
+  }, 300);
+  */
+  
+  
+  //Global variables
+  var rxview = { };
+  var rxbuffer = { };
+  
+  //Highlight which tab is selected
+  function refreshTab() {
+    var tag = location.hash.substring(1);
+    var tab = $(".rsp-port-tabs li a[href='#" + tag + "']");
+    
+    if (tag == "console") {
+      $(".rsp-port-container").hide();
+      $(".rsp-port-tabs li").removeClass("active");
+      $(".rsp-console").show();
+      tab.parent().addClass("active");
+    }
+    else if (tab.length) {
+      $(".rsp-port-container").hide();
+      $(".rsp-port-tabs li").removeClass("active");
+      $(".rsp-console").hide();
+      $(".rsp-port-container[data-port='" + tag + "']").show();
+      tab.parent().addClass("active");
+    }
+  }
+  
+  //Highlight buttons and tab depending on the port status
+  function setPortStatus(port, status) {
+    var container = $("[data-port='" + port + "']");
+    var tab = $("li a[href='#" + port + "']");
+    switch (status) {
+      case "open":
+        tab.addClass("rsp-port-open");
+        tab.removeClass("rsp-port-closed");
+        container.find(".rsp-action-open").hide();
+        container.find(".rsp-action-close").show();
+        container.find(".rsp-action-open").prop("disabled", true);
+        container.find(".rsp-action-close").prop("disabled", false);
+        container.find(".rsp-action-write").prop("disabled", false);
+        container.find(".rsp-action-close").removeClass("btn-danger");
+        container.find(".rsp-action-close").addClass("btn-success");
+        break;
+        
+      case "closed":
+        tab.addClass("rsp-port-closed");
+        tab.removeClass("rsp-port-open");
+        container.find(".rsp-action-open").show();
+        container.find(".rsp-action-close").hide();
+        container.find(".rsp-action-open").prop("disabled", false);
+        container.find(".rsp-action-close").prop("disabled", true);
+        container.find(".rsp-action-write").prop("disabled", true);
+        container.find(".rsp-action-open").removeClass("btn-danger");
+        container.find(".rsp-action-open").addClass("btn-primary");
+        break;
+        
+      default:
+      case "error":
+        container.find(".rsp-action-open").removeClass("btn-primary");
+        container.find(".rsp-action-close").removeClass("btn-primary");
+        container.find(".rsp-action-close").removeClass("btn-success");
+        container.find(".rsp-action-close").addClass("btn-danger");
+        container.find(".rsp-action-open").addClass("btn-danger");
+        break;
+    }
+  }
+  
+  function buildPortOptions(port) {
+    var options = { };
+    var container = $("[data-port='" + port + "']");
+    
+    //{ baudRate: 9600, dataBits: 8, stopBits: 1, parity: "none" }
+    var baudRate = parseInt($(".dropdown[data-options=baudRate] li a.active[data-value]").attr("data-value"));
+    var dataBits = parseInt($(".dropdown[data-options=dataBits] li a.active[data-value]").attr("data-value"));
+    var stopBits = parseInt($(".dropdown[data-options=stopBits] li a.active[data-value]").attr("data-value"));
+    var parity = $(".dropdown[data-options=parity] li a.active[data-value]").attr("data-value");
+    
+    if (baudRate > 0) options.baudRate = baudRate;
+    if (dataBits > 0) options.dataBits = dataBits;
+    if (stopBits > 0) options.stopBits = stopBits;
+    if (parity && parity.length > 0) options.parity = parity;
+    console.log(options);
+    
+    return options;
+  }
+  
+  //On hash change
+  window.onhashchange = function() {
+    refreshTab();
+  };
+    
+  //jQuery document ready
+  $(function() {
+    var rsp = new RemoteSerialPort({ url: "/" });
+    rsp.list(function(error, ports) {
+      if (error) return console.log(error);
+      
+      //Serial ports
+      //console.log(ports);
+      
+      //Populate tabs
+      $(".rsp-port-tabs").find(".rsp-port-tab").remove();
+      var template = $(".rsp-port-template").html();
+      for (var i = 0; i < ports.length; i++) {
+        var port = ports[i];
+        var accesskey = (i < 9 ? ' accesskey="' + (i + 1) + '"' : "");
+        
+        //Create a tab
+        $(".rsp-port-tabs").append('<li class="rsp-port-tab"><a href="#' + port.comName + '"' + accesskey + '>' + port.comName + '</a></li>\n');
+        
+        //Create a container with options, buttons and output console
+        var container = $(template);
+        container.attr("data-port", port.comName);
+        $(".rsp-tabs-container").append(container);
+        
+        //Set the port status
+        setPortStatus(port.comName, port.status);
+        
+        if (port.status == "open") {
+          bindWebSocket(port);
+        }
+      }
+      
+      $(".rsp-port-container").hide();
+      $(".rsp-console").show();
+      
+      //Handle drop down list selection
+      $(".dropdown-menu li a").click(function(e) {
+        e.preventDefault();
+        $(this).closest("ul").find("a").removeClass("active");
+        if ($(this).is(".custom-baud-rate")) {
+          var value = prompt("Enter baud rate:");
+          if (value > 0) {
+            $(this).closest("ul").append('<li><a href="#" data-value="' + value + '" class="active">' + value + '</a></li>'); //TODO: Bind event
+          }
+        }
+        else {
+          $(this).addClass("active");
+        }
+      });
+      
+      //Set the selected tab
+      refreshTab();
+      
+      //On tab click
+      $(".rsp-port-tabs li a").click(function(e) {
+        refreshTab();
+      });
+      
+      //Open a serial port
+      $(".rsp-action-open").click(function(e) {
+        var container = $(this).closest("[data-port]");
+        var port = container.attr("data-port");
+        var options = buildPortOptions(port);
+        rsp.open(port, options, function(error, result) {
+          if (error) {
+            setPortStatus(port, "error");
+            return console.error(error);
+          }
+          setPortStatus(port, "open");
+          console.log(result);
+          bindWebSocket(port);
+        });
+      });
+      
+      //Close a serial port
+      $(".rsp-action-close").click(function(e) {
+        var container = $(this).closest("[data-port]");
+        var port = container.attr("data-port");
+        rsp.close(port, function(error, result) {
+          if (error) {
+            setPortStatus(port, "error");
+            return console.error(error);
+          }
+          setPortStatus(port, "closed");
+          console.log(result);
+        });
+      });
+      
+      //Write to a serial port
+      $(".rsp-action-write").click(function(e) {
+        var container = $(this).closest("[data-port]");
+        var port = container.attr("data-port");
+        var data = container.find(".rsp-input-write").val() + "\n";
+        rsp.write(port, data, function(error, result) {
+          if (error) {
+            return console.error(error);
+          }
+          appendBuffer(port, data);
+          refreshView(port);
+          container.find(".rsp-input-write").val(""); //Clear value
+          console.log(result);
+        });
+      });
+      
+      $(".rsp-input-write").keypress(function(e) {
+        if (e.which == 13) {
+          $(".rsp-action-write").click();
+        }
+      });
+      
+      //Clear output console
+      $(".rsp-action-clear").click(function(e) {
+        var container = $(this).closest("[data-port]");
+        var port = container.attr("data-port");
+        container.find(".rsp-port-output").html("");
+        rxbuffer[port] = [ ];
+      });
+      
+      //Toggle ASCII mode
+      $(".rsp-action-ascii").click(function(e) {
+        var container = $(this).closest("[data-port]");
+        var port = container.attr("data-port");
+        container.find(".rsp-action-ascii").removeClass("btn-info");
+        container.find(".rsp-action-ascii").removeClass("btn-default");
+        container.find(".rsp-action-ascii").addClass("btn-info");
+        container.find(".rsp-action-hex").removeClass("btn-info");
+        container.find(".rsp-action-hex").removeClass("btn-default");
+        container.find(".rsp-action-hex").addClass("btn-default");
+        rxview[port] = "ascii";
+        refreshView(port);
+      });
+      
+      //Toggle hex mode
+      $(".rsp-action-hex").click(function(e) {
+        var container = $(this).closest("[data-port]");
+        var port = container.attr("data-port");
+        container.find(".rsp-action-ascii").removeClass("btn-info");
+        container.find(".rsp-action-ascii").removeClass("btn-default");
+        container.find(".rsp-action-ascii").addClass("btn-default");
+        container.find(".rsp-action-hex").removeClass("btn-info");
+        container.find(".rsp-action-hex").removeClass("btn-default");
+        container.find(".rsp-action-hex").addClass("btn-info");
+        rxview[port] = "hex";
+        refreshView(port);
+      });
+    });
+    
+    function appendBuffer(port, data) {
+      var length = data.length || data.byteLength;
+      if (typeof data === 'string') {
+        for (var i = 0; i < length; i++) {
+          rxbuffer[port].push(data.charCodeAt(i)); //Convert char to byte
+        }
+      }
+      else {
+        for (var i = 0; i < length; i++) {
+          rxbuffer[port].push(data[i]); //Append byte
+        }
+      }
+    }
+    
+    function refreshView(port) {
+      switch (rxview[port]) {
+        default:
+        case "ascii":
+          var s = "";
+          var data = rxbuffer[port] || [ ];
+          for (var i = 0; i < data.length; i++) {
+            //Printable ASCII chars
+            if (data[i] == 10 || data[i] == 13 || (data[i] >= 32 && data[i] <= 126)) {
+              s += String.fromCharCode(data[i]);
+            }
+            else {
+              s += ".";
+            }
+          }
+          $("[data-port='" + port + "']").find(".rsp-port-output").text(s);
+          break;
+          
+        case "hex":
+          //$("[data-port='" + port + "']").find(".rsp-port-output").text(hexview(data));
+          $("[data-port='" + port + "']").find(".rsp-port-output").html(hexviewhtml(rxbuffer[port]));
+          
+          $("[data-address]").mouseover(function (e) {
+            var hex = $(this).attr("data-address");
+            $("[data-address]").removeClass("hover");
+            $("[data-address='" + hex + "']").addClass("hover");
+          });
+          break;
+      }
+    }
+    
+    function appendAscii(port, data) {
+      var s = "";
+      for (var i = 0; i < data.byteLength; i++) {
+        //Printable ASCII chars
+        if (data[i] == 10 || data[i] == 13 || (data[i] >= 32 && data[i] <= 126)) {
+          s += String.fromCharCode(data[i]);
+        }
+        else {
+          s += ".";
+        }
+      }
+      var compatible = $("<div></div>").text(s).html();
+      $("[data-port='" + port + "']").find(".rsp-port-output").append(compatible);
+    }
+    
+    function appendHex(port, data) {
+      //$("[data-port='" + port + "']").find(".rsp-port-output").text(hexview(data));
+      $("[data-port='" + port + "']").find(".rsp-port-output").html(hexviewhtml(rxbuffer[port]));
+      
+      $("[data-address]").mouseover(function (e) {
+        var hex = $(this).attr("data-address");
+        $("[data-address]").removeClass("hover");
+        $("[data-address='" + hex + "']").addClass("hover");
+      });
+    }
+    
+    function bindWebSocket(port) {
+      //Bind to web socket and enable read ops
+      try {
+        if (!rxbuffer[port]) {
+          rxbuffer[port] = [ ];
+        }
+        
+        //WebSocket for control line
+        var wsc = rsp.bind("control", port);
+        wsc.on("open", function() { //TODO: "open" what - socket or serial port?
+          console.log("WebSocket control line connected");
+          //wsc.open({ baudRate: 250000 });
+        });
+        wsc.on("close", function() {
+          console.log("WebSocket control line disconnected");
+        });
+        wsc.on("error", function(error) {
+          console.error("WebSocket control line error: " + error);
+        });
+        wsc.on("read", function(data) {
+          console.log("WebSocket control line read");
+        });
+        //wsc.unbind();
+        
+        //WebSocket for data line
+        var wsd = rsp.bind("data", port);
+        wsd.on("open", function() {
+          console.log("WebSocket data line connected");
+        });
+        wsd.on("close", function() {
+          console.log("WebSocket data line disconnected");
+        });
+        wsd.on("error", function(error) {
+          console.error("WebSocket data line error: " + error);
+        });
+        wsd.on("read", function(data) {
+          console.log("WebSocket data line read");
+          appendBuffer(port, data);
+          switch (rxview[port]) {
+            default:
+            case "ascii":
+              appendAscii(port, data);
+              break;
+              
+            case "hex":
+              appendHex(port, data);
+              break;
+          }
+        });
+      }
+      catch (e) {
+        console.error(e);
+      }
+    }
+  });
+</script>
+</body>
+</html>

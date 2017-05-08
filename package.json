@@ -1,0 +1,25 @@
+{
+  "name": "remote-serial-port-server",
+  "description": "Serial port over Ethernet",
+  "version": "0.2.0",
+  "author": "Papn Kukn",
+  "license": "MIT",
+  "main": "server.js",
+  "bin": {
+    "remote-serial-port-server": "bin/remote-serial-port-server.js"
+  },
+  "scripts": {
+    "test": "cls && test\\test.bat",
+    "vtest": "cls && test\\test.bat -v"
+  },
+  "dependencies": {
+    "body-parser": "~1.8.1",
+    "ejs": "~0.8.5",
+    "express": "~4.9.0",
+    "morgan": "^1.4.0",
+    "request": "^2.81.0",
+    "semaphore": "^1.0.5",
+    "serialport": "^4.0.7",
+    "ws": "^2.3.1"
+  }
+}
