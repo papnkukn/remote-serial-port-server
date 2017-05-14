@@ -106,7 +106,7 @@ var server = app.listen(port, function() {
 
 http://localhost:5147/
 
-![Web Interface Screenshot](/screenshot-web-interface.png)
+![Web Interface Screenshot](/wiki/screenshot-web-interface.png)
 
 ## Usage Scenarios
 
