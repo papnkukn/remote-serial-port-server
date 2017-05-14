@@ -39,7 +39,8 @@
   .rsp-log-default {
   }
   
-  .rsp-log-warning {
+  .rsp-log-warn {
+    color: yellow;
   }
   
   .rsp-log-error {
@@ -125,9 +126,8 @@
     <div class="rsp-port-template">
       <div class="rsp-port-container">
         <div class="rsp-port-options">
-        
-          <div class="row">
-            <div class="col-sm-4">
+
+            <div style="float: left; margin-right: 10px;">
               
               <div class="dropdown-group">
                 <div class="dropdown" data-options="baudRate">
@@ -173,35 +173,37 @@
                     <li><a href="#" data-value="space">space</a></li>
                   </ul>
                 </div>
+                
+                <!-- Indicators -->
                 <button type="button" class="btn btn-info rsp-ws-connected" style="display: none;" disabled>Connected</button>
                 <button type="button" class="btn btn-danger rsp-ws-disconnected" style="display: none;" disabled>Disconnected</button>
+                
+                <!-- Action buttons -->
+                <button type="button" class="btn btn-primary rsp-action-open">Open</button>
+                <button type="button" class="btn btn-success rsp-action-close" style="display: none;" disabled>Close</button>
+                
               </div>
-              
-              <button type="button" class="btn btn-primary rsp-action-open">Open</button>
-              <button type="button" class="btn btn-success rsp-action-close" style="display: none;" disabled>Close</button>
-              <div style="clear: both;"></div>
           
             </div>
               
-            <div class="col-sm-4">
+            <div style="float: left; margin-right: 10px;">
               <div class="form-group">
                 <input type="text" class="form-control rsp-input-write" placeholder="Enter text to send..." accesskey="q" style="display: block; float: left; width: auto; min-width: 378px;" />
                 <button type="button" class="btn btn-primary rsp-action-write" accesskey="s" style="clear: both;" disabled>Send</button>
               </div>
             </div>
             
-            <div class="col-sm-4">
-          
-              <div class="pull-right">
-                <button type="button" class="btn btn-default rsp-action-clear">Clear</button>
-                <div class="btn-group">
-                  <button type="button" class="btn btn-info rsp-action-ascii">ASCII</button>
-                  <button type="button" class="btn btn-default rsp-action-hex">HEX</button>
-                </div>
+            <div style="float: right;">
+              
+              <button type="button" class="btn btn-default rsp-action-clear">Clear</button>
+              <div class="btn-group">
+                <button type="button" class="btn btn-info rsp-action-ascii">ASCII</button>
+                <button type="button" class="btn btn-default rsp-action-hex">HEX</button>
               </div>
           
             </div>
-          </div>
+            
+            <div style="clear: both;"></div>
           
         </div>
         <pre class="rsp-port-output"></pre>
@@ -470,6 +472,8 @@
     
   //jQuery document ready
   $(function() {
+    console.warn("Note: This is an early version of web interface with some known bugs. Please be patient.")
+  
     var rsp = new RemoteSerialPort({ url: "/" });
     rsp.list(function(error, ports) {
       if (error) return console.log(error);

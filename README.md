@@ -16,6 +16,11 @@ Start the server:
 remote-serial-port-server --port 5147
 ```
 
+Open in web browser:
+```bash
+http://localhost:5147/
+```
+
 ## Features
 
 * list and control serial ports remotely
@@ -79,7 +84,29 @@ ws.send("AT;\n");
 
 ## Client-side
 
-See [remote-serial-port-client](/papnkukn/remote-serial-port-client) library.
+See [remote-serial-port-client](https://github.com/papnkukn/remote-serial-port-client) library.
+
+## Using with Express
+
+```javascript
+var express = require('express');
+var app = express();
+
+//Register the remote serial port REST API with the prefix
+var srv = require('remote-serial-port-server');
+app.use("/api/v1", srv.http({ verbose: true }));
+
+var port = 5147;
+var server = app.listen(port, function() {
+  console.log('HTTP on port ' + server.address().port);
+});
+```
+
+## Web Interface
+
+http://localhost:5147/
+
+![Web Interface Screenshot](/screenshot-web-interface.png)
 
 ## Usage Scenarios
 
@@ -88,3 +115,4 @@ See [remote-serial-port-client](/papnkukn/remote-serial-port-client) library.
 3. Accessing a serial port on virtual machines when there is no hardware attached.
 4. Also used for crappy serial port drivers for cheap chinese Arduino clones. This can be done by running a virtual machine and attaching a USB device. Drivers are then installed to the virtual machine instead of host machine.
 5. Using a Raspberry Pi as a remote serial port host, e.g. hosting a WS2300 weather station connected to a Raspberry Pi and controlled from a desktop computer.
+6. Access to a serial port from node-webkit or electron UI frames.

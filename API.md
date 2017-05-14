@@ -2,14 +2,14 @@
 
 ## Getting Started
 
-Get API status
-```
-curl http://localhost:5147/api/v1
+Start the server
+```bash
+remote-serial-port-server --port 5147 --prefix /api/v1
 ```
 
 List available serial ports
 ```
-curl http://localhost:5147/api/v1
+curl http://localhost:5147/api/v1/port
 ```
 
 ## Authentication

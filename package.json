@@ -1,10 +1,10 @@
 {
   "name": "remote-serial-port-server",
   "description": "Serial port over Ethernet",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "Papn Kukn",
   "license": "MIT",
-  "main": "server.js",
+  "main": "lib/index.js",
   "bin": {
     "remote-serial-port-server": "bin/remote-serial-port-server.js"
   },
@@ -21,5 +21,12 @@
     "semaphore": "^1.0.5",
     "serialport": "^4.0.7",
     "ws": "^2.3.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/papnkukn/remote-serial-port-server"
+  },
+  "bugs": {
+    "url": "https://github.com/papnkukn/remote-serial-port-server/issues"
   }
 }
