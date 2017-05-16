@@ -41,7 +41,7 @@ Options:
   --help                 Print this message
   --list                 Print serial ports and exit
   --port, -p [num]       Socket port number, default: 5147
-  --mode, -m [mode]      Server mode: http, tcp, udp; default: http
+  --mode, -m [mode]      Server mode: http, tcp, udp, echo; default: http
   --prefix [path]        URL prefix: '/' for root or '/api/v1' etc.
   --no-list              Disable serial port list
   --no-read              Disable read ops
@@ -73,6 +73,7 @@ See [REST API Documentation](API.md)
 
 ## WebSocket
 
+<!--
 Inside a browser open the control line first
 ```javascript
 var wsc = new WebSocket('ws://localhost:5147/api/v1/port/COM1/control');
@@ -82,6 +83,7 @@ wsc.onopen = function(event) {
   wsc.send(packet);
 };
 ```
+-->
 
 Handle data over the data line
 ```javascript
@@ -111,7 +113,7 @@ Use `--mode` argument with `tcp` or `udp` value. Note that TCP and UDP sockets c
 
 Example of TCP socket: opens a serial port COM1 with default configuration on port 3000
 ```
-remote-serial-port-server --mode tcp --ssp COM1 --port 3000
+remote-serial-port-server --mode tcp --config COM1 --port 3000
 ```
 
 Test TCP socket using `telnet`
@@ -119,9 +121,9 @@ Test TCP socket using `telnet`
 telnet 127.0.0.1 3000
 ```
 
-Example of UDP socket: requires to set up broadcast address, i.e. the address where data is sent to on serial port receive
+Example of UDP socket
 ```
-remote-serial-port-server --mode udp --udp-host 127.0.0.1 --udp-broadcast 127.0.0.255 --ssp /dev/ttyUSB0,9600,8N1 --port 3000
+remote-serial-port-server --mode udp --config /dev/ttyUSB0,9600,8N1 --port 3000
 ```
 where 9600 is baud rate, 8 data bits, N for no parity and 1 stop bit.
 
@@ -149,20 +151,7 @@ var server = app.listen(port, function() {
 
 Send received bytes from a serial port immediately back to the serial port
 ```
-var udp = require('remote-serial-port-server').udp;
-
-var config = {
-  verbose: true,
-  port: 3000,
-  portname: "COM13",
-  host: "127.0.0.1",
-  broadcast: "127.0.0.1", //Broadcast must be the same as host for echo
-  options: {
-    baudRate: 115200
-  }
-};
-
-udp(config);
+remote-serial-port-server --mode echo --config COM1,9600,8N1 --verbose
 ```
 
 ## Web Interface

@@ -161,7 +161,7 @@ function help() {
   console.log("  --help                 Print this message");
   console.log("  --list                 Print serial ports and exit");
   console.log("  --port, -p [num]       Socket port number, default: 5147");
-  console.log("  --mode, -m [mode]      Server mode: http, tcp, udp; default: http");
+  console.log("  --mode, -m [mode]      Server mode: http, tcp, udp, echo; default: http");
   console.log("  --prefix [path]        URL prefix: '/' for root or '/api/v1' etc.");
   console.log("  --no-list              Disable serial port list");
   console.log("  --no-read              Disable read ops");
@@ -203,14 +203,26 @@ function listSerialPorts() {
 }
 
 function startUdpSocket(config) {
-  var listen = require('./lib/udp.js');
-  config.host = "0.0.0.0";
-  listen(config);
+  try {
+    var listen = require('./lib/udp.js');
+    config.host = "0.0.0.0";
+    listen(config);
+  }
+  catch (e) {
+    console.error(e.message);
+    process.exit(1);
+  }
 }
 
 function startTcpSocket(config) {
-  var listen = require('./lib/tcp.js');
-  listen(config);
+  try {
+    var listen = require('./lib/tcp.js');
+    listen(config);
+  }
+  catch (e) {
+    console.error(e.message);
+    process.exit(1);
+  }
 }
 
 function startWebServer(config) {
@@ -325,6 +337,18 @@ function startWebServer(config) {
   }
 }
 
+function startEcho(config) {
+  try {
+    var listen = require('./lib/echo.js');
+    listen(config);
+    setInterval(function() { }, Number.POSITIVE_INFINITY);
+  }
+  catch (e) {
+    console.error(e.message);
+    process.exit(1);
+  }
+}
+
 switch (config.mode) {  
   case "udp":
     startUdpSocket(config);
@@ -336,6 +360,10 @@ switch (config.mode) {
     
   case "http":
     startWebServer(config);
+    break;
+    
+  case "echo":
+    startEcho(config);
     break;
     
   default:
